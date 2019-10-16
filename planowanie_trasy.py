@@ -40,25 +40,25 @@ if __name__ == '__main__':
 
     grid = grid_setup('grid.txt')
     heuristic_grid = h_setup(end, grid)
-    # show_grid(heuristic_grid[::-1])
-    # show_grid(grid[::-1])
+    show_grid(heuristic_grid[::-1])
+    show_grid(grid[::-1])
 
     LO = {}  # adres,koszt G, heurystyka H, rodzic r,
     LZ = {}  # adres, rodzic
     gy, gx = start
 
-    LO[f'{gx}{gy}'] = {"G": 0, "H": float(heuristic_grid[gy][gx]), "F": float(heuristic_grid[gy][gx]), "r": None}
-    address = ""
-    f_min = None
-    while True:
-        for fx in LO:
-            if not f_min:
-                f_min = LO[fx]["F"]
-                address = fx
-            elif LO[fx]["F"] < f_min:
-                f_min = LO[fx]["F"]
-                address = fx
-        LZ[address] = LO.pop(address)
-        if (gy, gx) == end:
-            break
+    # LO[f'{gx}{gy}'] = {"G": 0, "H": float(heuristic_grid[gy][gx]), "F": float(heuristic_grid[gy][gx]), "r": None}
+    # address = ""
+    # f_min = None
+    # while True:
+    #     for fx in LO:
+    #         if not f_min:
+    #             f_min = LO[fx]["F"]
+    #             address = fx
+    #         elif LO[fx]["F"] < f_min:
+    #             f_min = LO[fx]["F"]
+    #             address = fx
+    #     LZ[address] = LO.pop(address)
+    #     if (gy, gx) == end:
+    #         break
 
