@@ -43,22 +43,27 @@ if __name__ == '__main__':
     # show_grid(heuristic_grid[::-1])
     # show_grid(grid[::-1])
 
-    LO = {}  # adres,koszt G, heurystyka H, rodzic r,
-    LZ = {}  # adres, rodzic
+    LO = {}  # adres: koszt G, heurystyka H, rodzic r,
+    LZ = {}  # adres: rodzic
     gy, gx = start
 
-    LO[f'{gx}{gy}'] = {"G": 0, "H": float(heuristic_grid[gy][gx]), "F": float(heuristic_grid[gy][gx]), "r": None}
-    address = ""
+    LO[f'{gy}/{gx}'] = {"G": 0, "H": float(heuristic_grid[gy][gx]), "F": float(heuristic_grid[gy][gx]), "r": None}
+    grid_cell = ""
     f_min = None
     while True:
-        for fx in LO:
-            if not f_min:
-                f_min = LO[fx]["F"]
-                address = fx
-            elif LO[fx]["F"] < f_min:
-                f_min = LO[fx]["F"]
-                address = fx
-        LZ[address] = LO.pop(address)
+        # znajdz min w LO
+        new_min = [(112, "00/11"), (220, "0/0"), (40, "19/12")]
+        for grid_cell, values in LO.items():
+            new_min.append((values["H"], grid_cell))
+        print(LO, LZ)
+        print(min(new_min), new_min)
+        # przenies do LZ
+        LZ[min(new_min)[1]] = LO.pop(min(new_min)[1])
+        print(LO, LZ)
+        # spr. czy koniec
         if (gy, gx) == end:
             break
+        # pobierz sąsiadów
 
+
+        break
