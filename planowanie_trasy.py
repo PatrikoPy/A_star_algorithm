@@ -78,12 +78,19 @@ if __name__ == '__main__':
         new_min = []
         for grid_cell, values in LO.items():
             new_min.append((values["F"], grid_cell))
-        new_min = min(new_min)
+        try:
+            new_min = min(new_min)
+        except:
+            print("Valid track doesn't exist.")
+            break
         gy, gx = new_min[1].split("/")
         g = LO[f'{gy}/{gx}']["G"]
         LZ[new_min[1]] = LO.pop(new_min[1])
         if (int(gy), int(gx)) == end:
             grid_track(f"{end[0]}/{end[1]}")
+            for i in track:
+                grid[int(i.split("/")[0])][int(i.split("/")[1])] = "3"
+            grid_save(grid[::-1], "grid_output.txt")
             break
         new_cell(int(gy) + 1, int(gx))
         new_cell(int(gy) - 1, int(gx))
@@ -91,5 +98,3 @@ if __name__ == '__main__':
         new_cell(int(gy), int(gx) + 1)
     for i in track:
         grid[int(i.split("/")[0])][int(i.split("/")[1])] = "3"
-    show_grid(grid[::-1])
-    grid_save(grid[::-1], "grid_output.txt")
