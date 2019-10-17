@@ -13,6 +13,11 @@ def grid_setup(load_grid):
             new_grid.append(line.strip('\r\n').split(' '))
     return new_grid[::-1]
 
+def grid_save(save_grid, save_file):
+    with open(save_file, "w") as grid_file:
+        for line in save_grid:
+            grid_file.write(" ".join(line)+"\n")
+
 
 def h_setup(stop, grid):
     y, x = stop
@@ -30,14 +35,35 @@ def h_setup(stop, grid):
         return h_grid
 
 
-def algorithm():
+def grid_track(end_cell):
+    if LZ[end_cell]["r"] == None:
+        pass
+    else:
+        track.append(LZ[end_cell]["r"])
+        grid_track(LZ[end_cell]["r"])
+
+def grid_fill():
     pass
+
+def new_cell(new_gy, new_gx):
+    try:
+        if grid[int(new_gy)][int(new_gx)] != "5" and new_gy >= 0 and new_gx >= 0:
+            next_cell = f"{int(new_gy)}/{int(new_gx)}"
+            print(next_cell)
+            if (next_cell not in LZ and next_cell not in LO) or (
+                    next_cell in LO and LO[next_cell]["F"] > (
+                    g + 1 + float(heuristic_grid[int(new_gy) + 1][int(new_gx)]))):
+                LO.update({next_cell: {"G": g + 1, "H": heuristic_grid[int(new_gy)][int(new_gx)],
+                                       "F": g + 1 + float(heuristic_grid[int(new_gy)][int(new_gx)]),
+                                       "r": f"{gy}/{gx}"}})
+    except:
+        pass
 
 
 if __name__ == '__main__':
-    start = (2, 3)
+    start = (0, 0)
     end = (19, 19)  # y,x
-
+    track = [f"{end[0]}/{end[1]}"]
     grid = grid_setup('grid.txt')
     heuristic_grid = h_setup(end, grid)
     # show_grid(heuristic_grid[::-1])
@@ -49,21 +75,36 @@ if __name__ == '__main__':
 
     LO[f'{gy}/{gx}'] = {"G": 0, "H": float(heuristic_grid[gy][gx]), "F": float(heuristic_grid[gy][gx]), "r": None}
     grid_cell = ""
-    f_min = None
+
     while True:
         # znajdz min w LO
-        new_min = [(112, "00/11"), (220, "0/0"), (40, "19/12")]
+        new_min = []
         for grid_cell, values in LO.items():
-            new_min.append((values["H"], grid_cell))
-        print(LO, LZ)
-        print(min(new_min), new_min)
+            new_min.append((values["F"], grid_cell))
+        # print(LO,  new_min)
+        new_min = min(new_min)
+        print(new_min)
+        gy, gx = new_min[1].split("/")
+
+        g = LO[f'{gy}/{gx}']["G"]
         # przenies do LZ
-        LZ[min(new_min)[1]] = LO.pop(min(new_min)[1])
-        print(LO, LZ)
+        LZ[new_min[1]] = LO.pop(new_min[1])
+
+        # print(LO, LZ)
         # spr. czy koniec
-        if (gy, gx) == end:
+        if (int(gy), int(gx)) == end:
+            grid_track(f"{end[0]}/{end[1]}")
             break
-        # pobierz sąsiadów
+            # pobierz sąsiadów góra,dół,lewa,prawa
 
+        new_cell(int(gy) + 1, int(gx))
+        new_cell(int(gy) - 1, int(gx))
+        new_cell(int(gy), int(gx) - 1)
+        new_cell(int(gy), int(gx) + 1)
+        # print(LO, LZ)
 
-        break
+    print(track[::-1])
+    for i in track:
+        grid[int(i.split("/")[0])][int(i.split("/")[1])] = "3"
+    show_grid(grid[::-1])
+    grid_save(grid[::-1], "grid_output.txt")
