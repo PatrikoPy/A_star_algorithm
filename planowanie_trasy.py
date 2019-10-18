@@ -58,7 +58,7 @@ def new_cell(new_gy, new_gx):
                 LO.update({next_cell: {"G": g + 1, "H": heuristic_grid[int(new_gy)][int(new_gx)],
                                        "F": g + 1 + float(heuristic_grid[int(new_gy)][int(new_gx)]),
                                        "r": f"{gy}/{gx}"}})
-    except:
+    except IndexError:
         pass
 
 
@@ -80,7 +80,7 @@ if __name__ == '__main__':
             new_min.append((values["F"], grid_cell))
         try:
             new_min = min(new_min)
-        except:
+        except ValueError:
             print("Valid track doesn't exist.")
             break
         gy, gx = new_min[1].split("/")
@@ -91,6 +91,7 @@ if __name__ == '__main__':
             for i in track:
                 grid[int(i.split("/")[0])][int(i.split("/")[1])] = "3"
             grid_save(grid[::-1], "grid_output.txt")
+            show_grid(grid[::-1])
             break
         new_cell(int(gy) + 1, int(gx))
         new_cell(int(gy) - 1, int(gx))
