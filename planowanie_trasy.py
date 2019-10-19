@@ -97,5 +97,4 @@ if __name__ == '__main__':
         new_cell(int(gy) - 1, int(gx))
         new_cell(int(gy), int(gx) - 1)
         new_cell(int(gy), int(gx) + 1)
-    for i in track:
-        grid[int(i.split("/")[0])][int(i.split("/")[1])] = "3"
+
