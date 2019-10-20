@@ -63,9 +63,18 @@ def new_cell(new_gy, new_gx):
         pass
 
 
+def coordinates_input():
+    coordinates = input("start/end coordinates in format x_start/y_start x_end/y_end : ")
+    coordinates = [coordinates.split(" ")[0].split("/"), coordinates.split(" ")[1].split("/")]
+    start_coord = tuple((int(coordinates[0][1]), int(coordinates[0][0])))
+    end_coord = tuple((int(coordinates[1][1]), int(coordinates[1][0])))
+    return start_coord, end_coord
+
+
 if __name__ == '__main__':
-    start = (0, 0)
-    end = (19, 19)  # y,x
+    # start = (0, 0)
+    # end = (19, 19)  # y,x
+    start, end = coordinates_input()
     track = [f"{end[0]}/{end[1]}"]
     grid = grid_setup('grid.txt')
     heuristic_grid = h_setup(end, grid)
@@ -97,4 +106,3 @@ if __name__ == '__main__':
         new_cell(int(gy) - 1, int(gx))
         new_cell(int(gy), int(gx) - 1)
         new_cell(int(gy), int(gx) + 1)
-
