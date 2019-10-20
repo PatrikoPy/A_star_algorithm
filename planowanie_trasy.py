@@ -8,10 +8,13 @@ def show_grid(my_grid):
 
 def grid_setup(load_grid):
     new_grid = []
+    grid_size = [0, 0]
     with open(load_grid) as grid_file:
         for line in grid_file:
             new_grid.append(line.strip('\r\n').split(' '))
-    return new_grid[::-1]
+            grid_size[0] += 1
+    grid_size[1] = len(new_grid[0])
+    return new_grid[::-1], (grid_size[0], grid_size[1])
 
 
 def grid_save(save_grid, save_file):
@@ -63,20 +66,34 @@ def new_cell(new_gy, new_gx):
         pass
 
 
-def coordinates_input():
-    coordinates = input("start/end coordinates in format x_start/y_start x_end/y_end : ")
-    coordinates = [coordinates.split(" ")[0].split("/"), coordinates.split(" ")[1].split("/")]
-    start_coord = tuple((int(coordinates[0][1]), int(coordinates[0][0])))
-    end_coord = tuple((int(coordinates[1][1]), int(coordinates[1][0])))
+def coordinates_input(max_coord):
+    while True:
+        try:
+            coordinates = input("start/end coordinates in format x_start/y_start x_end/y_end : \n")
+            coordinates = [coordinates.split(" ")[0].split("/"), coordinates.split(" ")[1].split("/")]
+            try:
+                start_coord = tuple((int(coordinates[0][1]), int(coordinates[0][0])))
+                end_coord = tuple((int(coordinates[1][1]), int(coordinates[1][0])))
+                if start_coord[0] >= max_coord[0] or start_coord[1] >= max_coord[1] or end_coord[0] >= max_coord[0] or \
+                        end_coord[1] >= max_coord[1]:
+                    raise ValueError
+            except ValueError:
+                start_coord = (0, 0)
+                end_coord = (max_coord[0] - 1, max_coord[1] - 1)
+                print("ERROR, default coordinates loaded. ")
+            break
+        except IndexError:
+            print("ERROR, try again...")
+
     return start_coord, end_coord
 
 
 if __name__ == '__main__':
+    grid, size = grid_setup('grid.txt')
     # start = (0, 0)
     # end = (19, 19)  # y,x
-    start, end = coordinates_input()
+    start, end = coordinates_input(size)
     track = [f"{end[0]}/{end[1]}"]
-    grid = grid_setup('grid.txt')
     heuristic_grid = h_setup(end, grid)
     LO = {}
     LZ = {}
