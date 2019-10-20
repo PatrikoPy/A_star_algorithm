@@ -45,7 +45,8 @@ def grid_track(end_cell):
 
 
 def grid_fill():
-    pass
+    for i in track:
+        grid[int(i.split("/")[0])][int(i.split("/")[1])] = "3"
 
 
 def new_cell(new_gy, new_gx):
@@ -88,8 +89,7 @@ if __name__ == '__main__':
         LZ[new_min[1]] = LO.pop(new_min[1])
         if (int(gy), int(gx)) == end:
             grid_track(f"{end[0]}/{end[1]}")
-            for i in track:
-                grid[int(i.split("/")[0])][int(i.split("/")[1])] = "3"
+            grid_fill()
             grid_save(grid[::-1], "grid_output.txt")
             show_grid(grid[::-1])
             break
