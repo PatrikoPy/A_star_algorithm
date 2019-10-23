@@ -23,10 +23,10 @@ def grid_save(save_grid, save_file):
             grid_file.write(" ".join(line) + "\n")
 
 
-def h_setup(stop, grid):
+def heuristic_setup(stop, source_grid):
     y, x = stop
-    h_grid = []
-    for i, n in enumerate(grid[:]):
+    new_h_grid = []
+    for i, n in enumerate(source_grid[:]):
         h_row = []
         for j, m in enumerate(n):
             if int(m) == 0:
@@ -34,36 +34,14 @@ def h_setup(stop, grid):
             else:
                 h_row.append('-1')
         else:
-            h_grid.append(h_row)
+            new_h_grid.append(h_row)
     else:
-        return h_grid
+        return new_h_grid
 
 
-def grid_track(end_cell):
-    if LZ[end_cell]["r"] == None:
-        pass
-    else:
-        track.append(LZ[end_cell]["r"])
-        grid_track(LZ[end_cell]["r"])
-
-
-def grid_fill():
-    for i in track:
+def grid_fill(grid, new_track):
+    for i in new_track:
         grid[int(i.split("/")[0])][int(i.split("/")[1])] = "3"
-
-
-def new_cell(new_gy, new_gx):
-    try:
-        if grid[int(new_gy)][int(new_gx)] != "5" and new_gy >= 0 and new_gx >= 0:
-            next_cell = f"{int(new_gy)}/{int(new_gx)}"
-            if (next_cell not in LZ and next_cell not in LO) or (
-                    next_cell in LO and LO[next_cell]["F"] > (
-                    g + 1 + float(heuristic_grid[int(new_gy) + 1][int(new_gx)]))):
-                LO.update({next_cell: {"G": g + 1, "H": heuristic_grid[int(new_gy)][int(new_gx)],
-                                       "F": g + 1 + float(heuristic_grid[int(new_gy)][int(new_gx)]),
-                                       "r": f"{gy}/{gx}"}})
-    except IndexError:
-        pass
 
 
 def coordinates_input(max_coord):
@@ -88,19 +66,36 @@ def coordinates_input(max_coord):
     return start_coord, end_coord
 
 
-if __name__ == '__main__':
-    grid, size = grid_setup('grid.txt')
-    # start = (0, 0)
-    # end = (19, 19)  # y,x
-    start, end = coordinates_input(size)
-    track = [f"{end[0]}/{end[1]}"]
-    heuristic_grid = h_setup(end, grid)
+def a_star(main_grid, start=(0, 0), end=(19, 19), move_cost=1):
+    def new_cell(new_gy, new_gx, grid, h_grid):
+        nonlocal LO, LZ, current_cost, move_cost, gy, gx
+        try:
+            if main_grid[int(new_gy)][int(new_gx)] != "5" and new_gy >= 0 and new_gx >= 0:
+                next_cell = f"{int(new_gy)}/{int(new_gx)}"
+                if (next_cell not in LZ and next_cell not in LO) or (
+                        next_cell in LO and LO[next_cell]["F"] > (
+                        current_cost + move_cost + float(h_grid[int(new_gy) + move_cost][int(new_gx)]))):
+                    LO.update({next_cell: {"G": current_cost + move_cost, "H": h_grid[int(new_gy)][int(new_gx)],
+                                           "F": current_cost + move_cost + float(h_grid[int(new_gy)][int(new_gx)]),
+                                           "r": f"{gy}/{gx}"}})
+        except IndexError:
+            pass
+
+    def grid_track(LZ, end_cell, track):
+        if LZ[end_cell]["r"] == None:
+            pass
+        else:
+            track.append(LZ[end_cell]["r"])
+            grid_track(LZ, LZ[end_cell]["r"], track)
+
     LO = {}
     LZ = {}
-    gy, gx = start
-    LO[f'{gy}/{gx}'] = {"G": 0, "H": float(heuristic_grid[gy][gx]), "F": float(heuristic_grid[gy][gx]), "r": None}
     grid_cell = ""
-
+    # start = (0, 0)
+    # end = (19, 19)  # y,x
+    gy, gx = start
+    heuristic_grid = heuristic_setup(end, main_grid)
+    LO[f'{gy}/{gx}'] = {"G": 0, "H": float(heuristic_grid[gy][gx]), "F": float(heuristic_grid[gy][gx]), "r": None}
     while True:
         new_min = []
         for grid_cell, values in LO.items():
@@ -111,15 +106,36 @@ if __name__ == '__main__':
             print("Valid track doesn't exist.")
             break
         gy, gx = new_min[1].split("/")
-        g = LO[f'{gy}/{gx}']["G"]
+        current_cost = LO[f'{gy}/{gx}']["G"]
         LZ[new_min[1]] = LO.pop(new_min[1])
         if (int(gy), int(gx)) == end:
-            grid_track(f"{end[0]}/{end[1]}")
-            grid_fill()
-            grid_save(grid[::-1], "grid_output.txt")
-            show_grid(grid[::-1])
+            track = [f"{end[0]}/{end[1]}"]
+            grid_track(LZ, f"{end[0]}/{end[1]}", track)
+            grid_fill(main_grid, track)
             break
-        new_cell(int(gy) + 1, int(gx))
-        new_cell(int(gy) - 1, int(gx))
-        new_cell(int(gy), int(gx) - 1)
-        new_cell(int(gy), int(gx) + 1)
+        new_cell(int(gy) + 1, int(gx), main_grid, heuristic_grid)
+        new_cell(int(gy) - 1, int(gx), main_grid, heuristic_grid)
+        new_cell(int(gy), int(gx) - 1, main_grid, heuristic_grid)
+        new_cell(int(gy), int(gx) + 1, main_grid, heuristic_grid)
+    return main_grid
+
+
+def main():
+    input_grid, size = grid_setup('grid.txt')
+    input_start, input_end = coordinates_input(size)
+    output_grid = a_star(input_grid, input_start, input_end, 1)
+    grid_save(output_grid[::-1], "grid_output.txt")
+
+
+def test():
+    start = (0, 0)
+    end = (19, 19)  # y,x
+    input_grid, size = grid_setup('grid.txt')
+    output_grid = a_star(input_grid, start, end, 1)
+    grid_save(output_grid[::-1], "grid_output.txt")
+    show_grid(output_grid[::-1])
+    # TODO: dekorator show_grid()
+
+
+if __name__ == '__main__':
+    main()
