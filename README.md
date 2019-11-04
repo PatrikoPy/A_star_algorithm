@@ -1,4 +1,4 @@
 The A star algorithm - finding a path in the grid square map.
 Grid: field available = 0, obstacle = 5, outcome track = 3
 
-!! .bat file require change of path before executing
+!! Before executing .bat file edit path.
