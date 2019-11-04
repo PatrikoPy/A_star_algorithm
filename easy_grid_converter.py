@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 import A_star
 
 
@@ -22,5 +23,5 @@ def easy_grid():
 
 
 if __name__ == "__main__":
-    A_star.main()
+    # A_star.main()
     easy_grid()

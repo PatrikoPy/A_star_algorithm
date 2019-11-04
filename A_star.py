@@ -1,9 +1,11 @@
+#! /usr/bin/env python3
 import math
+import sys
 
 
 def show_grid(my_grid):
     """
-    Displays grid i console.
+    Displays grid in the console.
 
     :param my_grid: array to display
     :return: None
@@ -184,10 +186,11 @@ def main():
     input_start, input_end = coordinates_input(size)
     output_grid = a_star(input_grid, input_start, input_end, 1)
     grid_save(output_grid[::-1], "grid_output.txt")
+    print("file grid_output.txt created successfully")
 
 
 def test():
-    """Test without user input and fixed start(0/0) and end(19/19)"""
+    """Test mode without user input and fixed start(0/0) and end(19/19)"""
     start = (0, 0)
     end = (19, 19)  # y,x
     input_grid, size = grid_setup('grid.txt')
@@ -198,4 +201,5 @@ def test():
 
 
 if __name__ == '__main__':
+    print(sys.argv)
     main()

@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 import A_star
 import easy_grid_converter
 
