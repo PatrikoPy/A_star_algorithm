@@ -1,5 +1,5 @@
-import planowanie_trasy
+import A_star
 import easy_grid_converter
 
-planowanie_trasy.test()
+A_star.test()
 easy_grid_converter.easy_grid()
