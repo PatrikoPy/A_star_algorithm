@@ -1,4 +1,2 @@
-# ERiA
-Elementy Robotyki i Automatyki - lab
-algorytm A* 
-grid: pole dostępne = 0, przeszkoda = 5, wyznaczona trasa = 3
+The A star algorithm - finding a path in the grid square map.
+Grid: field available = 0, obstacle = 5, outcome track = 3
